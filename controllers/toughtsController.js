@@ -1,18 +1,21 @@
 const { Thought, User } = require('../models');
 
 module.exports = { 
+    // get all thoughts
     async getAllThoughts(req, res) {
         try {
             const thoughts = await Thought.find();
             res.json(thoughts);
         } catch (err) { res.status(400).json(err); }
     },
+    // get one thought by id
     async getThoughtById(req, res) {
         try {
             const thought = await Thought.findOne({ _id: req.params.id });
             res.json(thought);
         } catch (err) { res.status(400).json(err); }
     },
+    // create new thought
     async createThought(req, res) {
         try {
             const thought = await Thought.create(req.body);
@@ -37,7 +40,7 @@ module.exports = {
             res.status(400).json({ message: 'An error occurred while processing the request.' });
         }
     },
-    
+    // update thought by id
     async updateThought(req, res) {
         try {
             const thought = await Thought.findOneAndUpdate(
@@ -51,6 +54,7 @@ module.exports = {
             res.json(thought);
         } catch (err) { res.status(400).json(err); }
     },
+    // delete thought by id
     async deleteThought(req , res) {
         console.log('Deleting thought with id:', req.params.id); 
         try {
@@ -62,6 +66,7 @@ module.exports = {
         }
         catch (err) { res.status(400).json(err); }
     },
+    // add reaction
     async addReaction(req, res) {
         try {
             const thought = await Thought.findOneAndUpdate(
@@ -75,6 +80,7 @@ module.exports = {
             res.json(thought);
         } catch (err) { res.status(400).json(err); }
     },
+    // delete reaction
     async deleteReaction(req, res) {
         try {
             const thought = await Thought.findOneAndUpdate(

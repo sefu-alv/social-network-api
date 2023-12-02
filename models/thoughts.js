@@ -1,5 +1,38 @@
-const {Schema } = require('mongoose');
-const reactionSchema = require('./reactions');
+const {Schema, model, Types} = require('mongoose');
+const moment = require('moment');
+
+// subdocument schema for reactions
+const ReactionSchema = new Schema(
+    {
+      reactionId: {
+        type: Schema.Types.ObjectId,
+        default: () => new Types.ObjectId()
+      },
+      reactionBody: {
+        type: String,
+        required: true,
+        maxlength: 280
+      },
+      username: {
+        type: String,
+        required: true
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+        get: (createdAtVal) => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')
+      }
+    },
+    {
+      toJSON: {
+        getters: true
+      },
+      id: false
+    }
+  );
+  
+
+// thought schema
 const thoughtSchema = new Schema(
     {
         thoughtText: {
@@ -12,13 +45,13 @@ const thoughtSchema = new Schema(
             type: Date,
             default: Date.now,
             // use a getter method to format the timestamp on query
-            get: createdAtVal => dateFormat(createdAtVal)
+            get: createdAtVal => moment(createdAtVal).format('MMM DD, YYYY [at] hh:mm a')   
         },
         username: {
             type: String,
             required: true
         },
-        reactions: [reactionSchema]
+        reactions: [ReactionSchema]
     },
     {
         toJSON: {
@@ -27,5 +60,12 @@ const thoughtSchema = new Schema(
     }
 );
 
+// virtual to get total count of reactions on retrieval
+thoughtSchema.virtual('reactionCount').get(function() {
+    return this.reactions.length;
+});
 
-module.exports = thoughtSchema;
+const Thought = model('Thought', thoughtSchema);
+
+module.exports = Thought;
+
